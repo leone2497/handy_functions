@@ -36,8 +36,8 @@ else function_choice == "Join files":
         
         for uploaded_file in uploaded_files:
             try:
-                df = pd.read_excel(uploaded_file)  # Read the file into a DataFrame
-                combined_df = pd.concat([combined_df, df], ignore_index=True)  # Accumulate data
+                df = pd.read_excel(uploaded_file)  
+                combined_df = pd.concat([combined_df, df], ignore_index=True)  
             except Exception as e:
                 st.error(f"Error reading the Excel file {uploaded_file.name}: {e}")
         
