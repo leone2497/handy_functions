@@ -1,9 +1,9 @@
 import pandas as pd
-import matplotlib as mt
 import streamlit as st
 import easyocr
 import numpy as np
 from glob import glob 
+from PIL import Image
 
 st.title("Handy functions")
 st.sidebar.title("Functions")
