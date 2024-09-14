@@ -1,0 +1,11 @@
+Why do we use Pillow (PIL)?
+Image Handling: When using a file uploader (like st.file_uploader in Streamlit), the uploaded file is in a stream-like object (e.g., BytesIO). Pillow can open and process this stream directly.
+
+Image Format Conversion: EasyOCR expects images to be in specific formats, typically as NumPy arrays. Pillow can convert the uploaded file into a format (e.g., a NumPy array) that EasyOCR can read.
+
+Preprocessing: Pillow allows you to perform image preprocessing (such as resizing, cropping, converting to grayscale, etc.), which can improve OCR accuracy. For example:
+
+Convert to grayscale to reduce noise.
+Resize an image to ensure better text detection.
+Rotate or crop images to focus on the areas that contain text.
+File Support: Pillow supports a wide range of image file formats (e.g., JPG, PNG, TIFF). It can easily load and convert files, ensuring compatibility with EasyOCR.
