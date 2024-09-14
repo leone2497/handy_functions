@@ -5,19 +5,29 @@ import numpy as np
 from glob import glob 
 from PIL import Image
 
-st.title("Handy functions")
+st.title("Handy Functions")
 st.sidebar.title("Functions")
-Functions = st.sidebar.selectbox("Choose a function", ["Extract text from image"])
+function_choice = st.sidebar.selectbox("Choose a function", ["Extract text from image"])
 
-if Functions == "Extract text from image":
-  st.subheader("Extract text from image")
-  uploaded_file = st.file_uploader("Upload image.", type=["jpg", "png", "jpeg"])
-  image = Image.open(uploaded_file)
-  img_np = np.array(image)
-  reader = easyocr.Reader(['en', 'it'], gpu=False)
-  result = reader.readtext(img_np)
-  for _, text, _ in result:
-    print(text)
+if function_choice == "Extract text from image":
+    st.subheader("Extract text from image")
+    uploaded_file = st.file_uploader("Upload image.", type=["jpg", "png", "jpeg"])
+    
+    if uploaded_file is not None:
+        try:
+            image = Image.open(uploaded_file)
+            img_np = np.array(image)
+            
+            reader = easyocr.Reader(['en', 'it'], gpu=False)
+            result = reader.readtext(img_np)
+            
+            st.subheader("Extracted Text:")
+            for _, text, _ in result:
+                st.text(text)
+        except Exception as e:
+            st.error(f"Error processing the image: {e}")
+    else:
+        st.info("Please upload an image file.")
     
 
 
