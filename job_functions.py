@@ -30,23 +30,24 @@ if function_choice == "Extract text from image":
         st.info("Please upload an image file.")
 else function_choice == "Join files":
     st.subheader("Join files")
-    uploaded_file = st.file_uploader("Upload files", type=["csv", "xls", "xlsx"], accept_multiple_files=True)
-    if uploaded_file is not None:
-        try:
-            image = Image.open(uploaded_file)
-            img_np = np.array(image)
-            
-            reader = easyocr.Reader(['en', 'it'], gpu=False)
-            result = reader.readtext(img_np)
-            
-            st.subheader("Extracted Text:")
-            for _, text, _ in result:
-                st.text(text)
-        except Exception as e:
-            st.error(f"Error processing the image: {e}")
+    uploaded_file = st.file_uploader("Upload files", type=["xls", "xlsx"], accept_multiple_files=True)
+    if uploaded_files:
+        combined_df = pd.DataFrame() 
+        
+        for uploaded_file in uploaded_files:
+            try:
+                df = pd.read_excel(uploaded_file)  # Read the file into a DataFrame
+                combined_df = pd.concat([combined_df, df], ignore_index=True)  # Accumulate data
+            except Exception as e:
+                st.error(f"Error reading the Excel file {uploaded_file.name}: {e}")
+        
+        if not combined_df.empty:
+            st.subheader("Combined Excel Content:")
+            st.write(combined_df)  # Display the combined DataFrame
+        else:
+            st.info("Uploaded files are empty or could not be read.")
     else:
-        st.info("Please upload an file.")
-
+        st.info("Please upload one or more Excel files.")
     
 
 
