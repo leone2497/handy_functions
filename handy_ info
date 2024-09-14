@@ -9,3 +9,12 @@ Convert to grayscale to reduce noise.
 Resize an image to ensure better text detection.
 Rotate or crop images to focus on the areas that contain text.
 File Support: Pillow supports a wide range of image file formats (e.g., JPG, PNG, TIFF). It can easily load and convert files, ensuring compatibility with EasyOCR.
+
+
+In EasyOCR, the results of the OCR process are returned as a list of tuples, where each tuple contains three key pieces of information for each detected text region:
+
+bbox: This stands for bounding box, and it contains the coordinates of the detected text in the image. The coordinates define the four corners of the box around the text (usually in pixel values). It is typically in the format of four points: [(x1, y1), (x2, y2), (x3, y3), (x4, y4)].
+
+text: This is the actual text detected by the OCR engine in the corresponding region of the image.
+
+confidence: This is a float value between 0 and 1, representing the model’s confidence in the text detection and recognition. A higher value indicates greater confidence in the result.
