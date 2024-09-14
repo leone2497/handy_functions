@@ -18,3 +18,5 @@ bbox: This stands for bounding box, and it contains the coordinates of the detec
 text: This is the actual text detected by the OCR engine in the corresponding region of the image.
 
 confidence: This is a float value between 0 and 1, representing the model’s confidence in the text detection and recognition. A higher value indicates greater confidence in the result.
+
+In Python, when you use the for _, text, _ syntax, it’s a way to unpack only specific elements from a tuple while ignoring the others. Here’s a quick breakdown:
