@@ -30,7 +30,7 @@ if function_choice == "Extract text from image":
         st.info("Please upload an image file.")
 else function_choice == "Join files":
     st.subheader("Join files")
-    uploaded_file = st.file_uploader("Upload files", type=["jpg", "png", "jpeg"])
+    uploaded_file = st.file_uploader("Upload files", type=["jpg", "png", "jpeg"], accept_multiple_files=True)
     if uploaded_file is not None:
         try:
             image = Image.open(uploaded_file)
