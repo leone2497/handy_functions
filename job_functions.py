@@ -16,6 +16,8 @@ if action == "Extract text from image":
   img_np = np.array(image)
   reader = easyocr.Reader(['en', 'it'], gpu=False)
   result = reader.readtext(img_np)
+  for _, text, _ in result:
+    print(text)
     
 
 
