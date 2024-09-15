@@ -1,3 +1,69 @@
+Why using requirements.txt
+Dependency Management:
+
+Consistency: It ensures that everyone working on the project uses the same versions of packages, avoiding discrepancies between different development environments.
+Reproducibility: Makes it easy to recreate the exact environment in which your code runs, which is essential for debugging, deployment, and collaboration.
+Simplified Installation:
+
+Batch Installation: Allows you to install all necessary packages with a single command, rather than installing each package individually.
+Documentation:
+
+Clarity: Provides a clear list of the packages your project depends on, which is useful for documentation and maintenance.
+How to Create and Use a requirements.txt File
+1. Create requirements.txt
+Manually: Create a file named requirements.txt in your project directory and list the packages and their versions, one per line. For example:
+
+makefile
+Copia codice
+pandas==2.0.3
+streamlit==1.22.0
+easyocr==1.6.0
+numpy==1.24.2
+Pillow==9.4.0
+Automatically: If you’re using a virtual environment and have already installed the necessary packages, you can generate the requirements.txt file automatically:
+
+bash
+Copia codice
+pip freeze > requirements.txt
+This command captures the current environment's installed packages and their versions, and writes them to requirements.txt.
+
+2. Install Packages from requirements.txt
+To install the packages listed in requirements.txt, use the following command:
+bash
+Copia codice
+pip install -r requirements.txt
+3. Update requirements.txt
+If you add or update packages in your environment, update requirements.txt by running:
+bash
+Copia codice
+pip freeze > requirements.txt
+Example Workflow
+Create a Virtual Environment (Recommended):
+
+bash
+Copia codice
+python -m venv myenv
+source myenv/bin/activate  # On Windows use `myenv\Scripts\activate`
+Install Packages:
+
+bash
+Copia codice
+pip install pandas streamlit easyocr numpy Pillow
+Generate requirements.txt:
+
+bash
+Copia codice
+pip freeze > requirements.txt
+Share or Deploy:
+
+Share requirements.txt with collaborators or use it in deployment to ensure the correct environment setup.
+Install Packages on another machine or environment:
+
+bash
+Copia codice
+pip install -r requirements.txt
+
+
 Why do we use Pillow (PIL)?
 Image Handling: When using a file uploader (like st.file_uploader in Streamlit), the uploaded file is in a stream-like object (e.g., BytesIO). Pillow can open and process this stream directly.
 
