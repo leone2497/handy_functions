@@ -69,7 +69,11 @@ elif function_choice == "Analysis":
         st.write(df)
         Filter_2= st.sidebar.selectbox("Choose filter that convert non numeric values into a unique count", df.columns.tolist())
         values_unique_filter = df[Filter_2].value_counts()
-        min_value, max_value = st.slider('Select a range of values',min_value=float(df[values_unique_filter].min()),max_value=float(df[values_unique_filter].max()),value=(float(df[values_unique_filter].min()), float(df[values_unique_filter].max())))
+        min_value, max_value = st.slider(
+            'Select a range of values',
+            min_value=float(values_unique_filter.min()),
+            max_value=float(values_unique_filter.max()),
+            value=(float(values_unique_filter.min()), float(values_unique_filter.max())))
         filtered_df = df[df[Filter_2].map(values_unique_filter) >= min_value] 
         filtered_df = filtered_df[filtered_df[Filter_2].map(values_unique_filter) <= max_value]
         df= filtered_df
