@@ -70,9 +70,11 @@ elif function_choice == "Analysis":
         Filter_2= st.sidebar.selectbox("Choose filter that convert non numeric values into a unique count", df.columns.tolist())
         values_unique_filter = df[Filter_2].value_counts()
         min_value, max_value = st.slider('Select a range of values',min_value=float(df[values_unique_filter].min()),max_value=float(df[values_unique_filter].max()),value=(float(df[values_unique_filter].min()), float(df[values_unique_filter].max())))
-        df = df[df[Filter_2].map(values_unique_filter) >= min_value]
-        df = df[df[Filter_2].map(values_unique_filter) <= max_value]
+        filtered_df = df[df[Filter_2].map(values_unique_filter) >= min_value] 
+        filtered_df = filtered_df[filtered_df[Filter_2].map(values_unique_filter) <= max_value]
+        df= filtered_df
         st.write(df)
+
         Filter_1= st.sidebar.selectbox("Choose filter", df.columns.tolist())
         if pd.api.types.is_numeric_dtype(df[Filter_1]):
             min_value, max_value = st.slider('Select a range of values',min_value=float(df[Filter_1].min()),max_value=float(df[Filter_1].max()),value=(float(df[Filter_1].min()), float(df[Filter_1].max())))
