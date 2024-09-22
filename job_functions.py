@@ -77,6 +77,6 @@ elif function_choice == "Analysis":
                 st.pyplot(plt)
                 plt.close()
         elif analysis_choice == "Statistical analysis":
-            df.describe()
+            first_variable = st.selectbox("Select variable:", df.columns.tolist())
             st.write("Statistical summary of the dataset:")
-            st.write(df.describe())
+            st.write(df[first_variable].describe())
