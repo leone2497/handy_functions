@@ -68,7 +68,7 @@ elif function_choice == "Analysis":
         st.write(df.columns.tolist())
         st.write(df)
         columns_for_unique = st.multiselect("Select columns to see unique values:", df.columns.tolist())
-        unique_values = df[column].unique()  # Corrected here
+        unique_values = df[columns_for_unique].unique()  # Corrected here
         st.write(f"Unique values in '{column}':")
         st.write(unique_values)
         
