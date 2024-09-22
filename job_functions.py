@@ -76,3 +76,5 @@ elif function_choice == "Analysis":
                 sns.histplot(df[first_variable], kde=True, log_scale=True)
                 st.pyplot(plt)
                 plt.close()
+        elif analysis_choice == "Statistical analysis":
+            df.describe()
