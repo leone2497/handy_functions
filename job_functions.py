@@ -60,8 +60,12 @@ elif function_choice == "Analisys":
     if analisys_choice == "Data visualization analisys":
         st.subheader("Data visualization analisys")
         graph = st.sidebar.selectbox("Choose type of visualization", ["Hystogram", "Lines"])
+        if graph== "Hystogram":
         first_variable = st.selectbox("Select x variable:", df.columns.tolist())
-        second_variable = st.selectbox("Select y variable:", df.columns.tolist())
+        sns.histplot(file_to_analise, first_variable='Price', kde=True, log_scale=True)
+        st.pyplot(plt)
+        plt.close()
+            
         
         
         
