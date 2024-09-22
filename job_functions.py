@@ -51,4 +51,5 @@ elif function_choice == "Join files":
         st.info("Please upload one or more Excel files.")
 elif 
 if function_choice == "Analisys":
-    st.subheader("Extract text from image")
+    st.subheader("Types of analisys")
+    function_choice = st.sidebar.selectbox("Choose analisys", ["Data visualization analisys", "Statistical analisys"])
