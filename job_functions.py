@@ -60,6 +60,8 @@ elif function_choice == "Analisys":
     if analisys_choice == "Data visualization analisys":
         st.subheader("Data visualization analisys")
         graph = st.sidebar.selectbox("Choose type of visualization", ["Hystogram", "Lines"])
+        first_variable = st.selectbox("Select x variable:", df.columns.tolist())
+        second_variable = st.selectbox("Select y variable:", df.columns.tolist())
         
         
         
