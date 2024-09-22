@@ -105,6 +105,7 @@ elif function_choice == "Analysis":
                 first_variable = st.selectbox("Select x variable:", df.columns.tolist())
                 plt.figure(figsize=(10, 6))
                 sns.histplot(df[first_variable], kde=True, log_scale=True)
+                plt.ticklabel_format(style='plain', axis='x')
                 st.pyplot(plt)
                 plt.close()
                 
