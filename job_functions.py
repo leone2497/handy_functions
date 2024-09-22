@@ -68,10 +68,12 @@ elif function_choice == "Analysis":
         st.write(df.columns.tolist())
         st.write(df)
         Filter_1= st.sidebar.selectbox("Choose filter", df.columns.tolist())
-        min_value, max_value = st.slider('Select a range of values',min_value=float(df[Filter_1].min()),max_value=float(df[Filter_1].max()),value=(float(df[Filter_1].min()), float(df[Filter_1].max())))
-        df = df[(df[Filter_1] >= min_value) & (df[Filter_1] <= max_value)]
-        st.write(df)
-        
+        if pd.api.types.is_numeric_dtype(df[Filter_1]):
+            min_value, max_value = st.slider('Select a range of values',min_value=float(df[Filter_1].min()),max_value=float(df[Filter_1].max()),value=(float(df[Filter_1].min()), float(df[Filter_1].max())))
+            df = df[(df[Filter_1] >= min_value) & (df[Filter_1] <= max_value)]
+            st.write(df)
+        else:
+            st.write("The selected column is not numeric. Please choose a numeric column.")
         # Select columns to see unique values
         columns_for_unique = st.multiselect("Select columns to see unique values:", df.columns.tolist())
         
