@@ -90,6 +90,11 @@ elif function_choice == "Analysis":
                 plt.close()
                 
         elif analysis_choice == "Statistical analysis":
-            first_variable = st.selectbox("Select variable for statistical summary:", df.columns.tolist())
-            st.write("Statistical summary of the dataset:")
+            Operation=st.sidebar.selectbox("Select analisys", ["Summary", "Count unique value"])
+            if Operation == "Summary":
+                first_variable = st.selectbox("Select variable for statistical summary:", df.columns.tolist())
+                st.write("Statistical summary of the dataset:")
+            else Operation == "Count unique value":
+                first_variable = st.selectbox("Select variable for statistical summary:", df.columns.tolist())
+                st.write("Statistical summary of the dataset:")
             st.write(df[first_variable].describe())
