@@ -69,9 +69,9 @@ elif function_choice == "Analysis":
         st.write(df)
         if columns_for_unique:
             for column in columns_for_unique:
-            unique_values = df[column].unique()  # Get unique values for the selected column
-            st.write(f"Unique values in '{column}':")
-            st.write(unique_values)
+                unique_values = df[column].unique()  # Get unique values for the selected column
+                st.write(f"Unique values in '{column}':")
+                st.write(unique_values)
         else:
             st.info("Please select at least one column to view unique values.")
         
