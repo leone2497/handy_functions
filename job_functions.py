@@ -53,5 +53,5 @@ elif function_choice == "Join files":
         st.info("Please upload one or more Excel files.")
 elif function_choice == "Analisys":
     st.subheader("Types of analisys")
-    Analisys_choice = st.sidebar.selectbox("Choose analisys", ["Data visualization analisys", "Statistical analisys"])
+    analisys_choice = st.sidebar.selectbox("Choose analisys", ["Data visualization analisys", "Statistical analisys"])
     file_to_analise = st.file_uploader("Choose a CSV or Excel file", type=["csv", "xls", "xlsx"])
