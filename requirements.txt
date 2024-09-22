@@ -4,3 +4,5 @@ easyocr
 numpy
 Pillow
 openpyxl
+seaborn
+matplotlib
