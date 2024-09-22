@@ -96,8 +96,8 @@ elif function_choice == "Analysis":
                 st.write("Statistical summary of the dataset:")
                 st.write(df[first_variable].describe())
             elif Operation == "Count unique value":
-                first_variable = st.selectbox("Select variable for statistical summary:", df.columns.tolist())
+                first_variable_v1 = st.selectbox("Select variable for statistical summary:", df.columns.tolist())
                 st.write("Statistical summary of the dataset:")
-                values = df[first_variable].value_counts()
+                values = df[first_variable_v1].value_counts()
                 st.write(values)
             
