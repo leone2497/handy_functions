@@ -7,7 +7,7 @@ from PIL import Image
 
 st.title("Handy Functions")
 st.sidebar.title("Functions")
-function_choice = st.sidebar.selectbox("Choose a function", ["Extract text from image", "Join files"])
+function_choice = st.sidebar.selectbox("Choose a function", ["Extract text from image", "Join files", "Analisys"])
 
 if function_choice == "Extract text from image":
     st.subheader("Extract text from image")
@@ -49,3 +49,6 @@ elif function_choice == "Join files":
             st.info("Uploaded files are empty or could not be read.")
     else:
         st.info("Please upload one or more Excel files.")
+elif 
+if function_choice == "Analisys":
+    st.subheader("Extract text from image")
