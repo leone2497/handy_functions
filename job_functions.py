@@ -67,6 +67,11 @@ elif function_choice == "Analysis":
         st.write("Columns in the uploaded file:")
         st.write(df.columns.tolist())
         st.write(df)
+        Filter_2= st.sidebar.selectbox("Choose filter that convert non numeric values into a unique count", df.columns.tolist())
+        values_unique_filter = df[Filter_2].value_counts()
+        min_value, max_value = st.slider('Select a range of values',min_value=float(df[values_unique_filter].min()),max_value=float(df[values_unique_filter].max()),value=(float(df[values_unique_filter].min()), float(df[values_unique_filter].max())))
+        df = df[(df[values_unique_filter] >= min_value) & (df[values_unique_filter] <= max_value)]
+        st.write(df)
         Filter_1= st.sidebar.selectbox("Choose filter", df.columns.tolist())
         if pd.api.types.is_numeric_dtype(df[Filter_1]):
             min_value, max_value = st.slider('Select a range of values',min_value=float(df[Filter_1].min()),max_value=float(df[Filter_1].max()),value=(float(df[Filter_1].min()), float(df[Filter_1].max())))
@@ -74,6 +79,7 @@ elif function_choice == "Analysis":
             st.write(df)
         else:
             st.write("The selected column is not numeric. Please choose a numeric column.")
+        
         # Select columns to see unique values
         columns_for_unique = st.multiselect("Select columns to see unique values:", df.columns.tolist())
         
