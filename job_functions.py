@@ -66,6 +66,7 @@ elif function_choice == "Analysis":
 
         st.write("Columns in the uploaded file:")
         st.write(df.columns.tolist())
+        st.writw(df)
         
         if analysis_choice == "Data visualization analysis":
             st.subheader("Data visualization analysis")
