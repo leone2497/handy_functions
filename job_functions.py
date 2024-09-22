@@ -56,9 +56,11 @@ elif function_choice == "Join files":
 elif function_choice == "Analysis":
     st.subheader("Types of analysis")
     Filter_1= st.sidebar.selectbox("Choose filter", df.columns.tolist())
-    slicer_1= st.bar_chart(filtered_df[Filter_1])
-    Filter_2= st.sidebar.selectbox("Choose filter", df.columns.tolist())
-    slicer_2= st.bar_chart(filtered_df[Filter_2])
+    min_value, max_value = st.slider(
+    'Select a range of values',
+    min_value=float(df[Filter_1].min()),
+    max_value=float(df[Filter_1].max()),
+    value=(float(df[Filter_1].min()), float(df[Filter_1].max())))
     analysis_choice = st.sidebar.selectbox("Choose analysis", ["Data visualization analysis", "Statistical analysis"])
     file_to_analyze = st.file_uploader("Choose a CSV or Excel file", type=["csv", "xls", "xlsx"])
 
