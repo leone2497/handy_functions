@@ -59,8 +59,9 @@ elif function_choice == "Analysis":
     min_value, max_value = st.slider(
     'Select a range of values',
     min_value=float(df[Filter_1].min()),
-    max_value=float(df[Filter_1].max()),
-    value=(float(df[Filter_1].min()), float(df[Filter_1].max())))
+    max_value=float(df[Filter_1].max()))
+    filtered_df = df[(df[min_value] >= min_value) & (df[max_value] <= max_value)]
+    st.write(filtered_df)
     analysis_choice = st.sidebar.selectbox("Choose analysis", ["Data visualization analysis", "Statistical analysis"])
     file_to_analyze = st.file_uploader("Choose a CSV or Excel file", type=["csv", "xls", "xlsx"])
 
