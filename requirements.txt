@@ -6,4 +6,4 @@ Pillow
 openpyxl
 seaborn
 streamlit-dynamic-filters
-matplotlib.pyplot
+matplotlib
