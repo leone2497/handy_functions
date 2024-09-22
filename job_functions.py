@@ -78,3 +78,5 @@ elif function_choice == "Analysis":
                 plt.close()
         elif analysis_choice == "Statistical analysis":
             df.describe()
+            st.write("Statistical summary of the dataset:")
+            st.write(df.describe())
