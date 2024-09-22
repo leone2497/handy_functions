@@ -55,6 +55,7 @@ elif function_choice == "Analisys":
     st.subheader("Types of analisys")
     analisys_choice = st.sidebar.selectbox("Choose analisys", ["Data visualization analisys", "Statistical analisys"])
     file_to_analise = st.file_uploader("Choose a CSV or Excel file", type=["csv", "xls", "xlsx"])
+    df = pd.read_excel(uploaded_file)
     st.write("Columns in the uploaded file:")
     st.write(df.columns.tolist())
     if analisys_choice == "Data visualization analisys":
@@ -62,7 +63,7 @@ elif function_choice == "Analisys":
         graph = st.sidebar.selectbox("Choose type of visualization", ["Hystogram", "Lines"])
         if graph== "Hystogram":
         first_variable = st.selectbox("Select x variable:", df.columns.tolist())
-        sns.histplot(file_to_analise, first_variable='Price', kde=True, log_scale=True)
+        sns.histplot(df, first_variable='Price', kde=True, log_scale=True)
         st.pyplot(plt)
         plt.close()
             
