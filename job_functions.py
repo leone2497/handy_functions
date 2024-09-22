@@ -1,5 +1,7 @@
 import pandas as pd
 import streamlit as st
+import seaborn as sns
+import matplotlib as mt
 import easyocr
 import numpy as np
 from glob import glob 
