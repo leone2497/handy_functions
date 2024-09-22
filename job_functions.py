@@ -51,37 +51,4 @@ elif function_choice == "Join files":
         else:
             st.info("Uploaded files are empty or could not be read.")
     else:
-        st.info("Please upload one or more Excel files.")
-
-elif function_choice == "Analysis":
-    st.subheader("Types of analysis")
-    analysis_choice = st.sidebar.selectbox("Choose analysis", ["Data visualization analysis", "Statistical analysis"])
-    file_to_analyze = st.file_uploader("Choose a CSV or Excel file", type=["csv", "xls", "xlsx"])
-
-    if file_to_analyze is not None:
-        if file_to_analyze.name.endswith('.csv'):
-            df = pd.read_csv(file_to_analyze)
-        else:
-            df = pd.read_excel(file_to_analyze)
-
-        st.write("Columns in the uploaded file:")
-        st.write(df.columns.tolist())
-        st.write(df)
-        columns_for_unique = st.multiselect("Select columns to see unique values:", df.columns.tolist())
-        unique_values = df[column_for_unique].unique()
-        st.write(f"Unique values in '{column_for_unique}':")
-        st.write(unique_values)
-        
-        if analysis_choice == "Data visualization analysis":
-            st.subheader("Data visualization analysis")
-            graph = st.sidebar.selectbox("Choose type of visualization", ["Histogram", "Lines"])
-            if graph == "Histogram":
-                first_variable = st.selectbox("Select x variable:", df.columns.tolist())
-                plt.figure(figsize=(10, 6))
-                sns.histplot(df[first_variable], kde=True, log_scale=True)
-                st.pyplot(plt)
-                plt.close()
-        elif analysis_choice == "Statistical analysis":
-            first_variable = st.selectbox("Select variable:", df.columns.tolist())
-            st.write("Statistical summary of the dataset:")
-            st.write(df[first_variable].describe())
+        st.info("Please upload one or more Excel files
