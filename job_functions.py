@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
 import seaborn as sns
-import matplotlib as mt
+import matplotlib.pyplot as plt
 import easyocr
 import numpy as np
 from glob import glob 
@@ -9,7 +9,7 @@ from PIL import Image
 
 st.title("Handy Functions")
 st.sidebar.title("Functions")
-function_choice = st.sidebar.selectbox("Choose a function", ["Extract text from image", "Join files", "Analisys"])
+function_choice = st.sidebar.selectbox("Choose a function", ["Extract text from image", "Join files", "Analysis"])
 
 if function_choice == "Extract text from image":
     st.subheader("Extract text from image")
@@ -30,6 +30,7 @@ if function_choice == "Extract text from image":
             st.error(f"Error processing the image: {e}")
     else:
         st.info("Please upload an image file.")
+        
 elif function_choice == "Join files":
     st.subheader("Join files")
     uploaded_files = st.file_uploader("Upload files", type=["xls", "xlsx"], accept_multiple_files=True)
@@ -51,22 +52,27 @@ elif function_choice == "Join files":
             st.info("Uploaded files are empty or could not be read.")
     else:
         st.info("Please upload one or more Excel files.")
-elif function_choice == "Analisys":
-    st.subheader("Types of analisys")
-    analisys_choice = st.sidebar.selectbox("Choose analisys", ["Data visualization analisys", "Statistical analisys"])
-    file_to_analise = st.file_uploader("Choose a CSV or Excel file", type=["csv", "xls", "xlsx"])
-    df = pd.read_excel(uploaded_file)
-    st.write("Columns in the uploaded file:")
-    st.write(df.columns.tolist())
-    if analisys_choice == "Data visualization analisys":
-        st.subheader("Data visualization analisys")
-        graph = st.sidebar.selectbox("Choose type of visualization", ["Hystogram", "Lines"])
-        if graph== "Hystogram":
-            first_variable = st.selectbox("Select x variable:", df.columns.tolist())
-            sns.histplot(df, first_variable='Price', kde=True, log_scale=True)
-            st.pyplot(plt)
-            plt.close()
-            
+
+elif function_choice == "Analysis":
+    st.subheader("Types of analysis")
+    analysis_choice = st.sidebar.selectbox("Choose analysis", ["Data visualization analysis", "Statistical analysis"])
+    file_to_analyze = st.file_uploader("Choose a CSV or Excel file", type=["csv", "xls", "xlsx"])
+
+    if file_to_analyze is not None:
+        if file_to_analyze.name.endswith('.csv'):
+            df = pd.read_csv(file_to_analyze)
+        else:
+            df = pd.read_excel(file_to_analyze)
+
+        st.write("Columns in the uploaded file:")
+        st.write(df.columns.tolist())
         
-        
-        
+        if analysis_choice == "Data visualization analysis":
+            st.subheader("Data visualization analysis")
+            graph = st.sidebar.selectbox("Choose type of visualization", ["Histogram", "Lines"])
+            if graph == "Histogram":
+                first_variable = st.selectbox("Select x variable:", df.columns.tolist())
+                plt.figure(figsize=(10, 6))
+                sns.histplot(df[first_variable], kde=True, log_scale=True)
+                st.pyplot(plt)
+                plt.close()
