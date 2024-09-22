@@ -55,13 +55,6 @@ elif function_choice == "Join files":
 
 elif function_choice == "Analysis":
     st.subheader("Types of analysis")
-    Filter_1= st.sidebar.selectbox("Choose filter", df.columns.tolist())
-    min_value, max_value = st.slider(
-    'Select a range of values',
-    min_value=float(df[Filter_1].min()),
-    max_value=float(df[Filter_1].max()))
-    filtered_df = df[(df[min_value] >= min_value) & (df[max_value] <= max_value)]
-    st.write(filtered_df)
     analysis_choice = st.sidebar.selectbox("Choose analysis", ["Data visualization analysis", "Statistical analysis"])
     file_to_analyze = st.file_uploader("Choose a CSV or Excel file", type=["csv", "xls", "xlsx"])
 
@@ -73,6 +66,10 @@ elif function_choice == "Analysis":
 
         st.write("Columns in the uploaded file:")
         st.write(df.columns.tolist())
+        st.write(df)
+        Filter_1= st.sidebar.selectbox("Choose filter", df.columns.tolist())
+        min_value, max_value = st.slider('Select a range of values',min_value=float(df[Filter_1].min()),max_value=float(df[Filter_1].max()),value=(float(df[Filter_1].min()), float(df[Filter_1].max())))
+        df = df[(df[Filter_1] >= min_value) & (df[Filter_1] <= max_value)]
         st.write(df)
         
         # Select columns to see unique values
