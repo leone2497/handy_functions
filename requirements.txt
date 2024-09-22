@@ -5,4 +5,5 @@ numpy
 Pillow
 openpyxl
 seaborn
+streamlit-dynamic-filters
 matplotlib
