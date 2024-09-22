@@ -67,10 +67,13 @@ elif function_choice == "Analysis":
         st.write("Columns in the uploaded file:")
         st.write(df.columns.tolist())
         st.write(df)
-        columns_for_unique = st.multiselect("Select columns to see unique values:", df.columns.tolist())
-        unique_values = df[columns_for_unique].unique()  # Corrected here
-        st.write(f"Unique values in '{column}':")
-        st.write(unique_values)
+        if columns_for_unique:
+            for column in columns_for_unique:
+            unique_values = df[column].unique()  # Get unique values for the selected column
+            st.write(f"Unique values in '{column}':")
+            st.write(unique_values)
+        else:
+            st.info("Please select at least one column to view unique values.")
         
         if analysis_choice == "Data visualization analysis":
             st.subheader("Data visualization analysis")
