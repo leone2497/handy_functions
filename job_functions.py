@@ -55,8 +55,11 @@ elif function_choice == "Analisys":
     st.subheader("Types of analisys")
     analisys_choice = st.sidebar.selectbox("Choose analisys", ["Data visualization analisys", "Statistical analisys"])
     file_to_analise = st.file_uploader("Choose a CSV or Excel file", type=["csv", "xls", "xlsx"])
+    st.write("Columns in the uploaded file:")
+    st.write(df.columns.tolist())
     if analisys_choice == "Data visualization analisys":
         st.subheader("Data visualization analisys")
         graph = st.sidebar.selectbox("Choose type of visualization", ["Hystogram", "Lines"])
+        
         
         
