@@ -67,9 +67,14 @@ elif function_choice == "Analysis":
         st.write("Columns in the uploaded file:")
         st.write(df.columns.tolist())
         st.write(df)
+        
+        # Select columns to see unique values
+        columns_for_unique = st.multiselect("Select columns to see unique values:", df.columns.tolist())
+        
         if columns_for_unique:
             for column in columns_for_unique:
                 unique_values = df[column].unique()  # Get unique values for the selected column
+                st.write(f"Unique values in '{column}':")
                 st.write(unique_values)
         else:
             st.info("Please select at least one column to view unique values.")
@@ -83,7 +88,8 @@ elif function_choice == "Analysis":
                 sns.histplot(df[first_variable], kde=True, log_scale=True)
                 st.pyplot(plt)
                 plt.close()
+                
         elif analysis_choice == "Statistical analysis":
-            first_variable = st.selectbox("Select variable:", df.columns.tolist())
+            first_variable = st.selectbox("Select variable for statistical summary:", df.columns.tolist())
             st.write("Statistical summary of the dataset:")
             st.write(df[first_variable].describe())
