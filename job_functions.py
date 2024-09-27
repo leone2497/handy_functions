@@ -9,18 +9,30 @@ from PIL import Image
 import torch
 from transformers import pipeline
 import os
-from moviepy.editor import VideoFileClip, AudioFileClip
+import subprocess
+from moviepy.editor import VideoFileClip
 
-# Function to extract audio from video using ffmpeg
+# Function to extract audio from video using moviepy
 def extract_audio_from_video(video_file):
-    audio_file = "temp_audio.wav"
     try:
         video = VideoFileClip(video_file)
         audio = video.audio
+        audio_file = "temp_audio.wav"
         audio.write_audiofile(audio_file)
         return audio_file
     except Exception as e:
-        st.error(f"Error processing the video file: {e}")
+        st.error(f"Error processing the video file with moviepy: {e}")
+        return None
+
+# Function to extract audio using ffmpeg CLI as a fallback
+def extract_audio_ffmpeg(video_file):
+    audio_file = "temp_audio.wav"
+    command = ["ffmpeg", "-i", video_file, "-q:a", "0", "-map", "a", audio_file]
+    try:
+        subprocess.run(command, check=True)
+        return audio_file
+    except subprocess.CalledProcessError as e:
+        st.error(f"Error processing the video file with ffmpeg: {e}")
         return None
 
 st.title("Handy Functions")
@@ -156,13 +168,17 @@ elif function_choice == "Transcribe Audio":
             f.write(uploaded_audio.getbuffer())
         
         # Check if it's an mp4 file and extract audio if needed
+        audio_file = None
         if uploaded_audio.name.endswith(".mp4"):
             st.info("Extracting audio from MP4 file...")
             audio_file = extract_audio_from_video(temp_file_path)
             if audio_file is None:
-                st.error("Audio extraction failed; unable to transcribe.")
-                os.remove(temp_file_path)  # Remove temp video file
-                st.stop()  # Stop execution to avoid further errors
+                st.info("Attempting to extract audio using ffmpeg...")
+                audio_file = extract_audio_ffmpeg(temp_file_path)
+                if audio_file is None:
+                    st.error("Audio extraction failed; unable to transcribe.")
+                    os.remove(temp_file_path)  # Remove temp video file
+                    st.stop()  # Stop execution to avoid further errors
         else:
             audio_file = temp_file_path
         
@@ -184,7 +200,7 @@ elif function_choice == "Transcribe Audio":
             st.error(f"Error during transcription: {e}")
         finally:
             os.remove(temp_file_path)  # Remove temp video file
-            if 'audio_file' in locals() and audio_file == "temp_audio.wav":
+            if audio_file and audio_file == "temp_audio.wav":
                 os.remove(audio_file)  # Remove temp audio file if created
     else:
         st.info("Please upload an audio or video file.")
