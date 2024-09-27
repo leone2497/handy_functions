@@ -9,6 +9,7 @@ from PIL import Image
 import torch
 from transformers import pipeline
 import json
+from moviepy.editor import VideoFileClip  # Import moviepy for extracting audio from MP4
 
 st.title("Handy Functions")
 st.sidebar.title("Functions")
@@ -75,7 +76,7 @@ elif function_choice == "Analysis":
         st.write(df)
         
         # Apply filters
-        Filter_2= st.sidebar.selectbox("Choose filter that converts non-numeric values into a unique count", df.columns.tolist())
+        Filter_2 = st.sidebar.selectbox("Choose filter that converts non-numeric values into a unique count", df.columns.tolist())
         values_unique_filter = df[Filter_2].value_counts()
         min_value, max_value = st.slider(
             'Select a range of values based on non-numeric columns',
@@ -84,7 +85,7 @@ elif function_choice == "Analysis":
             value=(float(values_unique_filter.min()), float(values_unique_filter.max())))
         filtered_df = df[df[Filter_2].map(values_unique_filter) >= min_value] 
         filtered_df = filtered_df[filtered_df[Filter_2].map(values_unique_filter) <= max_value]
-        df= filtered_df
+        df = filtered_df
         st.write(df)
 
         Filter_1 = st.sidebar.selectbox("Choose filter", df.columns.tolist())
@@ -133,10 +134,24 @@ elif function_choice == "Analysis":
 # New function: Transcribe Audio using the ASR model
 elif function_choice == "Transcribe Audio":
     st.subheader("Transcribe Audio")
-    uploaded_audio = st.file_uploader("Upload audio file", type=["wav", "mp3", "flac"])
+    uploaded_audio = st.file_uploader("Upload audio or video file", type=["wav", "mp3", "flac", "mp4"])
     
     if uploaded_audio is not None:
-        model_name = "openai/whisper-large-v3"  # Use the ASR model you mentioned
+        # Check if it's an mp4 file and extract audio if needed
+        if uploaded_audio.name.endswith(".mp4"):
+            st.info("Extracting audio from MP4 file...")
+            with open("temp_video.mp4", "wb") as f:
+                f.write(uploaded_audio.getbuffer())
+            
+            video = VideoFileClip("temp_video.mp4")
+            audio = video.audio
+            audio.write_audiofile("temp_audio.wav")
+            audio_file = "temp_audio.wav"
+        else:
+            audio_file = uploaded_audio
+        
+        # Use Whisper model for transcription
+        model_name = "openai/whisper-large-v3"
         pipe = pipeline(
             "automatic-speech-recognition",
             model=model_name,
@@ -145,8 +160,8 @@ elif function_choice == "Transcribe Audio":
         )
 
         st.info("Transcribing the audio, please wait...")
-        transcription = pipe(uploaded_audio)["text"]
+        transcription = pipe(audio_file)["text"]
         st.subheader("Transcription:")
         st.write(transcription)
     else:
-        st.info("Please upload an audio file.")
+        st.info("Please upload an audio or video file.")
