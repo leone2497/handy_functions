@@ -1,9 +1,11 @@
 pandas
 streamlit
+seaborn
+matplotlib
 easyocr
 numpy
+glob
 Pillow
-openpyxl
-seaborn
-streamlit-dynamic-filters
-matplotlib
+torch
+transformers
+rich
