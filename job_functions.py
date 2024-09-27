@@ -8,6 +8,7 @@ from glob import glob
 from PIL import Image
 import torch
 from transformers import pipeline
+import json
 import tempfile
 from moviepy.editor import VideoFileClip  # Import moviepy for extracting audio from MP4
 
@@ -83,7 +84,7 @@ elif function_choice == "Analysis":
             min_value=float(values_unique_filter.min()),
             max_value=float(values_unique_filter.max()),
             value=(float(values_unique_filter.min()), float(values_unique_filter.max())))
-
+        
         filtered_df = df[df[Filter_2].map(values_unique_filter) >= min_value] 
         filtered_df = filtered_df[filtered_df[Filter_2].map(values_unique_filter) <= max_value]
         df = filtered_df
@@ -142,14 +143,19 @@ elif function_choice == "Transcribe Audio":
         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
             temp_video_file.write(uploaded_audio.getbuffer())  # Write the uploaded content to the temporary file
             temp_video_file.flush()  # Ensure all data is written to disk
-
+            temp_video_file.close()  # Close the temporary file to release resources
+            
             audio_file = None
             if uploaded_audio.name.endswith(".mp4"):
                 st.info("Extracting audio from MP4 file...")
-                video = VideoFileClip(temp_video_file.name)  # Load the video file
-                audio_file = tempfile.NamedTemporaryFile(delete=False, suffix=".wav").name  # Create a temp file for the audio
-                video.audio.write_audiofile(audio_file)  # Extract audio and save as .wav
-                video.close()  # Close the video clip
+                try:
+                    video = VideoFileClip(temp_video_file.name)  # Load the video file
+                    audio_file = tempfile.NamedTemporaryFile(delete=False, suffix=".wav").name  # Create a temp file for the audio
+                    video.audio.write_audiofile(audio_file)  # Extract audio and save as .wav
+                    video.close()  # Close the video clip
+                except Exception as e:
+                    st.error(f"Error processing the video file: {e}")
+                    return  # Exit to avoid further errors
             else:
                 audio_file = uploaded_audio  # Use directly for other audio formats
         
@@ -163,8 +169,11 @@ elif function_choice == "Transcribe Audio":
         )
 
         st.info("Transcribing the audio, please wait...")
-        transcription = pipe(audio_file)["text"]
-        st.subheader("Transcription:")
-        st.write(transcription)
+        try:
+            transcription = pipe(audio_file)["text"]
+            st.subheader("Transcription:")
+            st.write(transcription)
+        except Exception as e:
+            st.error(f"Error during transcription: {e}")
     else:
         st.info("Please upload an audio or video file.")
