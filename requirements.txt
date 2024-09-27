@@ -4,8 +4,9 @@ seaborn
 matplotlib
 easyocr
 numpy
+glob
 Pillow
 torch
 transformers
 moviepy
-imageio[ffmpeg]
+imageio-ffmpeg  # Ensure FFmpeg is included
