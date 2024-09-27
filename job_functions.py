@@ -11,21 +11,18 @@ from transformers import pipeline
 import os
 import subprocess
 from moviepy.editor import VideoFileClip
+import imageio_ffmpeg as ffmpeg
 
 # Function to check if FFmpeg is installed
 def check_ffmpeg_installed():
-    try:
-        subprocess.run(["ffmpeg", "-version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        return True
-    except (FileNotFoundError, subprocess.CalledProcessError):
-        return False
+    return ffmpeg.get_ffmpeg_exe() is not None
 
 # Function to extract audio from video using moviepy
 def extract_audio_from_video(video_file):
     try:
         video = VideoFileClip(video_file)
-        audio = video.audio
         audio_file = "temp_audio.wav"
+        audio = video.audio
         audio.write_audiofile(audio_file)
         return audio_file
     except Exception as e:
@@ -43,9 +40,11 @@ def extract_audio_ffmpeg(video_file):
         st.error(f"Error processing the video file with ffmpeg: {e}")
         return None
 
+# Set up the Streamlit app
 st.title("Handy Functions")
 st.sidebar.title("Functions")
-function_choice = st.sidebar.selectbox("Choose a function", ["Extract text from image", "Join files", "Analysis", "Transcribe Audio"])
+function_choice = st.sidebar.selectbox("Choose a function", 
+    ["Extract text from image", "Join files", "Analysis", "Transcribe Audio"])
 
 # Extract text from image function
 if function_choice == "Extract text from image":
@@ -98,10 +97,7 @@ elif function_choice == "Analysis":
     file_to_analyze = st.file_uploader("Choose a CSV or Excel file", type=["csv", "xls", "xlsx"])
 
     if file_to_analyze is not None:
-        if file_to_analyze.name.endswith('.csv'):
-            df = pd.read_csv(file_to_analyze)
-        else:
-            df = pd.read_excel(file_to_analyze)
+        df = pd.read_csv(file_to_analyze) if file_to_analyze.name.endswith('.csv') else pd.read_excel(file_to_analyze)
 
         st.write("Columns in the uploaded file:")
         st.write(df.columns.tolist())
@@ -110,33 +106,36 @@ elif function_choice == "Analysis":
         # Apply filters
         Filter_2 = st.sidebar.selectbox("Choose filter that converts non-numeric values into a unique count", df.columns.tolist())
         values_unique_filter = df[Filter_2].value_counts()
+        
         min_value, max_value = st.slider(
             'Select a range of values based on non-numeric columns',
-            min_value=float(values_unique_filter.min()),
-            max_value=float(values_unique_filter.max()),
-            value=(float(values_unique_filter.min()), float(values_unique_filter.max())))
+            min_value=values_unique_filter.min(),
+            max_value=values_unique_filter.max(),
+            value=(values_unique_filter.min(), values_unique_filter.max()))
         
-        filtered_df = df[df[Filter_2].map(values_unique_filter) >= min_value] 
-        filtered_df = filtered_df[filtered_df[Filter_2].map(values_unique_filter) <= max_value]
-        df = filtered_df
-        st.write(df)
+        filtered_df = df[(df[Filter_2].map(values_unique_filter) >= min_value) & 
+                          (df[Filter_2].map(values_unique_filter) <= max_value)]
+        
+        st.write(filtered_df)
 
         Filter_1 = st.sidebar.selectbox("Choose filter", df.columns.tolist())
-        if pd.api.types.is_numeric_dtype(df[Filter_1]):
-            min_value, max_value = st.slider('Select a range of values', min_value=float(df[Filter_1].min()), max_value=float(df[Filter_1].max()), value=(float(df[Filter_1].min()), float(df[Filter_1].max())))
-            df = df[(df[Filter_1] >= min_value) & (df[Filter_1] <= max_value)]
-            st.write(df)
+        if pd.api.types.is_numeric_dtype(filtered_df[Filter_1]):
+            min_value, max_value = st.slider('Select a range of values', 
+                                              min_value=filtered_df[Filter_1].min(), 
+                                              max_value=filtered_df[Filter_1].max(), 
+                                              value=(filtered_df[Filter_1].min(), filtered_df[Filter_1].max()))
+            filtered_df = filtered_df[(filtered_df[Filter_1] >= min_value) & (filtered_df[Filter_1] <= max_value)]
+            st.write(filtered_df)
         else:
-            st.write("The selected column is not numeric. Please choose a numeric column.")
+            st.warning("The selected column is not numeric. Please choose a numeric column.")
         
         # Select columns to see unique values
-        columns_for_unique = st.multiselect("Select columns to see unique values:", df.columns.tolist())
+        columns_for_unique = st.multiselect("Select columns to see unique values:", filtered_df.columns.tolist())
         
         if columns_for_unique:
             for column in columns_for_unique:
-                unique_values = df[column].unique()
-                st.write(f"Unique values in '{column}':")
-                st.write(unique_values)
+                unique_values = filtered_df[column].unique()
+                st.write(f"Unique values in '{column}': {unique_values}")
         else:
             st.info("Please select at least one column to view unique values.")
         
@@ -145,9 +144,9 @@ elif function_choice == "Analysis":
             st.subheader("Data visualization analysis")
             graph = st.sidebar.selectbox("Choose type of visualization", ["Histogram", "Lines"])
             if graph == "Histogram":
-                first_variable = st.selectbox("Select x variable:", df.columns.tolist())
+                first_variable = st.selectbox("Select x variable:", filtered_df.columns.tolist())
                 plt.figure(figsize=(10, 6))
-                sns.histplot(df[first_variable], kde=True, log_scale=True)
+                sns.histplot(filtered_df[first_variable], kde=True, log_scale=True)
                 st.pyplot(plt)
                 plt.close()
                 
@@ -155,13 +154,13 @@ elif function_choice == "Analysis":
         elif analysis_choice == "Statistical analysis":
             Operation = st.sidebar.selectbox("Select analysis", ["Summary", "Count unique value"])
             if Operation == "Summary":
-                first_variable = st.selectbox("Select variable for statistical summary:", df.columns.tolist())
+                first_variable = st.selectbox("Select variable for statistical summary:", filtered_df.columns.tolist())
                 st.write("Statistical summary of the dataset:")
-                st.write(df[first_variable].describe())
+                st.write(filtered_df[first_variable].describe())
             elif Operation == "Count unique value":
-                first_variable_v1 = st.selectbox("Select variable unique values counting:", df.columns.tolist())
+                first_variable_v1 = st.selectbox("Select variable unique values counting:", filtered_df.columns.tolist())
                 st.write("Statistical summary of the dataset:")
-                values = df[first_variable_v1].value_counts()
+                values = filtered_df[first_variable_v1].value_counts()
                 st.write(values)
 
 # New function: Transcribe Audio using the ASR model
@@ -184,14 +183,11 @@ elif function_choice == "Transcribe Audio":
             audio_file = None
             if uploaded_audio.name.endswith(".mp4"):
                 st.info("Extracting audio from MP4 file...")
-                audio_file = extract_audio_from_video(temp_file_path)
+                audio_file = extract_audio_from_video(temp_file_path) or extract_audio_ffmpeg(temp_file_path)
                 if audio_file is None:
-                    st.info("Attempting to extract audio using ffmpeg...")
-                    audio_file = extract_audio_ffmpeg(temp_file_path)
-                    if audio_file is None:
-                        st.error("Audio extraction failed; unable to transcribe.")
-                        os.remove(temp_file_path)  # Remove temp video file
-                        st.stop()  # Stop execution to avoid further errors
+                    st.error("Audio extraction failed; unable to transcribe.")
+                    os.remove(temp_file_path)  # Remove temp video file
+                    st.stop()  # Stop execution to avoid further errors
             else:
                 audio_file = temp_file_path
             
