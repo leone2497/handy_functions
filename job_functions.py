@@ -15,7 +15,12 @@ import imageio_ffmpeg as ffmpeg
 
 # Function to check if FFmpeg is installed
 def check_ffmpeg_installed():
-    return ffmpeg.get_ffmpeg_exe() is not None
+    ffmpeg_exe = ffmpeg.get_ffmpeg_exe()
+    if ffmpeg_exe:
+        return True
+    else:
+        st.error("FFmpeg is not installed. Please install FFmpeg to use this feature.")
+        return False
 
 # Function to extract audio from video using moviepy
 def extract_audio_from_video(video_file):
@@ -168,9 +173,7 @@ elif function_choice == "Transcribe Audio":
     st.subheader("Transcribe Audio")
     
     # Check if FFmpeg is installed
-    if not check_ffmpeg_installed():
-        st.error("FFmpeg is not installed. Please install FFmpeg to use this feature.")
-    else:
+    if check_ffmpeg_installed():
         uploaded_audio = st.file_uploader("Upload audio or video file", type=["wav", "mp3", "flac", "mp4"])
         
         if uploaded_audio is not None:
