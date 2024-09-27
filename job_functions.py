@@ -143,7 +143,6 @@ elif function_choice == "Transcribe Audio":
         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
             temp_video_file.write(uploaded_audio.getbuffer())  # Write the uploaded content to the temporary file
             temp_video_file.flush()  # Ensure all data is written to disk
-            temp_video_file.close()  # Close the temporary file to release resources
             
             audio_file = None
             if uploaded_audio.name.endswith(".mp4"):
@@ -153,26 +152,31 @@ elif function_choice == "Transcribe Audio":
                     audio_file = tempfile.NamedTemporaryFile(delete=False, suffix=".wav").name  # Create a temp file for the audio
                     video.audio.write_audiofile(audio_file)  # Extract audio and save as .wav
                     video.close()  # Close the video clip
+                except KeyError as e:
+                    st.error(f"Error processing the video file: {e}. Ensure the video file has a valid frame rate (fps).")
                 except Exception as e:
                     st.error(f"Error processing the video file: {e}")
             else:
                 audio_file = uploaded_audio  # Use directly for other audio formats
         
-        # Use Whisper model for transcription
-        model_name = "openai/whisper-large-v3"
-        pipe = pipeline(
-            "automatic-speech-recognition",
-            model=model_name,
-            torch_dtype=torch.float16,
-            device="cuda" if torch.cuda.is_available() else "cpu"
-        )
+        # Use Whisper model for transcription if audio extraction was successful
+        if audio_file is not None:
+            model_name = "openai/whisper-large-v3"
+            pipe = pipeline(
+                "automatic-speech-recognition",
+                model=model_name,
+                torch_dtype=torch.float16,
+                device="cuda" if torch.cuda.is_available() else "cpu"
+            )
 
-        st.info("Transcribing the audio, please wait...")
-        try:
-            transcription = pipe(audio_file)["text"]
-            st.subheader("Transcription:")
-            st.write(transcription)
-        except Exception as e:
-            st.error(f"Error during transcription: {e}")
+            st.info("Transcribing the audio, please wait...")
+            try:
+                transcription = pipe(audio_file)["text"]
+                st.subheader("Transcription:")
+                st.write(transcription)
+            except Exception as e:
+                st.error(f"Error during transcription: {e}")
+        else:
+            st.error("Audio extraction failed; unable to transcribe.")
     else:
         st.info("Please upload an audio or video file.")
