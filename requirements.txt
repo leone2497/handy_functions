@@ -1,12 +1,11 @@
-pandas
 streamlit
+pandas
 seaborn
 matplotlib
 easyocr
 numpy
-glob
-Pillow
 torch
 transformers
 moviepy
-imageio-ffmpeg  # Ensure FFmpeg is included
+Pillow
+imageio-ffmpeg
