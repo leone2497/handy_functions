@@ -6,11 +6,15 @@ import easyocr
 import numpy as np
 from glob import glob 
 from PIL import Image
+import torch
+from transformers import pipeline
+import json
 
 st.title("Handy Functions")
 st.sidebar.title("Functions")
-function_choice = st.sidebar.selectbox("Choose a function", ["Extract text from image", "Join files", "Analysis"])
+function_choice = st.sidebar.selectbox("Choose a function", ["Extract text from image", "Join files", "Analysis", "Transcribe Audio"])
 
+# Extract text from image function
 if function_choice == "Extract text from image":
     st.subheader("Extract text from image")
     uploaded_file = st.file_uploader("Upload image", type=["jpg", "png", "jpeg"])
@@ -30,7 +34,8 @@ if function_choice == "Extract text from image":
             st.error(f"Error processing the image: {e}")
     else:
         st.info("Please upload an image file.")
-        
+
+# Join files function
 elif function_choice == "Join files":
     st.subheader("Join files")
     uploaded_files = st.file_uploader("Upload files", type=["xls", "xlsx"], accept_multiple_files=True)
@@ -53,6 +58,7 @@ elif function_choice == "Join files":
     else:
         st.info("Please upload one or more Excel files.")
 
+# Analysis function
 elif function_choice == "Analysis":
     st.subheader("Types of analysis")
     analysis_choice = st.sidebar.selectbox("Choose analysis", ["Data visualization analysis", "Statistical analysis"])
@@ -67,10 +73,12 @@ elif function_choice == "Analysis":
         st.write("Columns in the uploaded file:")
         st.write(df.columns.tolist())
         st.write(df)
-        Filter_2= st.sidebar.selectbox("Choose filter that convert non numeric values into a unique count", df.columns.tolist())
+        
+        # Apply filters
+        Filter_2= st.sidebar.selectbox("Choose filter that converts non-numeric values into a unique count", df.columns.tolist())
         values_unique_filter = df[Filter_2].value_counts()
         min_value, max_value = st.slider(
-            'Select a range of values based on non numeric columns',
+            'Select a range of values based on non-numeric columns',
             min_value=float(values_unique_filter.min()),
             max_value=float(values_unique_filter.max()),
             value=(float(values_unique_filter.min()), float(values_unique_filter.max())))
@@ -79,9 +87,9 @@ elif function_choice == "Analysis":
         df= filtered_df
         st.write(df)
 
-        Filter_1= st.sidebar.selectbox("Choose filter", df.columns.tolist())
+        Filter_1 = st.sidebar.selectbox("Choose filter", df.columns.tolist())
         if pd.api.types.is_numeric_dtype(df[Filter_1]):
-            min_value, max_value = st.slider('Select a range of values',min_value=float(df[Filter_1].min()),max_value=float(df[Filter_1].max()),value=(float(df[Filter_1].min()), float(df[Filter_1].max())))
+            min_value, max_value = st.slider('Select a range of values', min_value=float(df[Filter_1].min()), max_value=float(df[Filter_1].max()), value=(float(df[Filter_1].min()), float(df[Filter_1].max())))
             df = df[(df[Filter_1] >= min_value) & (df[Filter_1] <= max_value)]
             st.write(df)
         else:
@@ -92,12 +100,13 @@ elif function_choice == "Analysis":
         
         if columns_for_unique:
             for column in columns_for_unique:
-                unique_values = df[column].unique()  # Get unique values for the selected column
+                unique_values = df[column].unique()
                 st.write(f"Unique values in '{column}':")
                 st.write(unique_values)
         else:
             st.info("Please select at least one column to view unique values.")
         
+        # Data visualization analysis
         if analysis_choice == "Data visualization analysis":
             st.subheader("Data visualization analysis")
             graph = st.sidebar.selectbox("Choose type of visualization", ["Histogram", "Lines"])
@@ -108,8 +117,9 @@ elif function_choice == "Analysis":
                 st.pyplot(plt)
                 plt.close()
                 
+        # Statistical analysis
         elif analysis_choice == "Statistical analysis":
-            Operation=st.sidebar.selectbox("Select analisys", ["Summary", "Count unique value"])
+            Operation = st.sidebar.selectbox("Select analysis", ["Summary", "Count unique value"])
             if Operation == "Summary":
                 first_variable = st.selectbox("Select variable for statistical summary:", df.columns.tolist())
                 st.write("Statistical summary of the dataset:")
@@ -119,4 +129,24 @@ elif function_choice == "Analysis":
                 st.write("Statistical summary of the dataset:")
                 values = df[first_variable_v1].value_counts()
                 st.write(values)
-            
+
+# New function: Transcribe Audio using the ASR model
+elif function_choice == "Transcribe Audio":
+    st.subheader("Transcribe Audio")
+    uploaded_audio = st.file_uploader("Upload audio file", type=["wav", "mp3", "flac"])
+    
+    if uploaded_audio is not None:
+        model_name = "openai/whisper-large-v3"  # Use the ASR model you mentioned
+        pipe = pipeline(
+            "automatic-speech-recognition",
+            model=model_name,
+            torch_dtype=torch.float16,
+            device="cuda" if torch.cuda.is_available() else "cpu"
+        )
+
+        st.info("Transcribing the audio, please wait...")
+        transcription = pipe(uploaded_audio)["text"]
+        st.subheader("Transcription:")
+        st.write(transcription)
+    else:
+        st.info("Please upload an audio file.")
