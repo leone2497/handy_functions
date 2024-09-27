@@ -8,8 +8,8 @@ from glob import glob
 from PIL import Image
 import torch
 from transformers import pipeline
-import json
 import tempfile
+import subprocess  # For using ffmpeg
 from moviepy.editor import VideoFileClip  # Import moviepy for extracting audio from MP4
 
 st.title("Handy Functions")
@@ -142,17 +142,18 @@ elif function_choice == "Transcribe Audio":
         # Use a temporary file for MP4 handling
         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video_file:
             temp_video_file.write(uploaded_audio.getbuffer())  # Write the uploaded content to the temporary file
-            temp_video_file.flush()  # Ensure all data is written to disk
             
             audio_file = None
             if uploaded_audio.name.endswith(".mp4"):
                 st.info("Extracting audio from MP4 file...")
                 try:
-                    video = VideoFileClip(temp_video_file.name)  # Load the video file
+                    # Use ffmpeg to extract audio
                     audio_file = tempfile.NamedTemporaryFile(delete=False, suffix=".wav").name  # Create a temp file for the audio
-                    video.audio.write_audiofile(audio_file)  # Extract audio and save as .wav
-                    video.close()  # Close the video clip
-                except KeyError as e:
+                    subprocess.run(
+                        ["ffmpeg", "-i", temp_video_file.name, audio_file],
+                        check=True
+                    )
+                except subprocess.CalledProcessError as e:
                     st.error(f"Error processing the video file: {e}. Ensure the video file has a valid frame rate (fps).")
                 except Exception as e:
                     st.error(f"Error processing the video file: {e}")
