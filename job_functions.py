@@ -155,7 +155,6 @@ elif function_choice == "Transcribe Audio":
                     video.close()  # Close the video clip
                 except Exception as e:
                     st.error(f"Error processing the video file: {e}")
-                    return  # Exit to avoid further errors
             else:
                 audio_file = uploaded_audio  # Use directly for other audio formats
         
