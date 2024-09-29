@@ -49,7 +49,7 @@ def extract_audio_ffmpeg(video_file):
 st.title("Handy Functions")
 st.sidebar.title("Functions")
 function_choice = st.sidebar.selectbox("Choose a function", 
-    ["Extract text from image", "Join files", "Analysis", "Transcribe Audio"])
+    ["Extract text from image", "Join files", "Analysis"])
 
 # Extract text from image function
 if function_choice == "Extract text from image":
@@ -168,51 +168,3 @@ elif function_choice == "Analysis":
                 values = filtered_df[first_variable_v1].value_counts()
                 st.write(values)
 
-# New function: Transcribe Audio using the ASR model
-elif function_choice == "Transcribe Audio":
-    st.subheader("Transcribe Audio")
-    
-    # Check if FFmpeg is installed
-    if check_ffmpeg_installed():
-        uploaded_audio = st.file_uploader("Upload audio or video file", type=["wav", "mp3", "flac", "mp4"])
-        
-        if uploaded_audio is not None:
-            # Save the uploaded file temporarily
-            temp_file_path = f"temp_video{os.path.splitext(uploaded_audio.name)[1]}"
-            with open(temp_file_path, "wb") as f:
-                f.write(uploaded_audio.getbuffer())
-            
-            # Check if it's an mp4 file and extract audio if needed
-            audio_file = None
-            if uploaded_audio.name.endswith(".mp4"):
-                st.info("Extracting audio from MP4 file...")
-                audio_file = extract_audio_from_video(temp_file_path) or extract_audio_ffmpeg(temp_file_path)
-                if audio_file is None:
-                    st.error("Audio extraction failed; unable to transcribe.")
-                    os.remove(temp_file_path)  # Remove temp video file
-                    st.stop()  # Stop execution to avoid further errors
-            else:
-                audio_file = temp_file_path
-            
-            # Use Whisper model for transcription
-            model_name = "openai/whisper-large-v3"
-            pipe = pipeline(
-                "automatic-speech-recognition",
-                model=model_name,
-                torch_dtype=torch.float16,
-                device="cuda" if torch.cuda.is_available() else "cpu"
-            )
-
-            st.info("Transcribing the audio, please wait...")
-            try:
-                transcription = pipe(audio_file)["text"]
-                st.subheader("Transcription:")
-                st.write(transcription)
-            except Exception as e:
-                st.error(f"Error during transcription: {e}")
-            finally:
-                os.remove(temp_file_path)  # Remove temp video file
-                if audio_file and audio_file == "temp_audio.wav":
-                    os.remove(audio_file)  # Remove temp audio file if created
-        else:
-            st.info("Please upload an audio or video file.")
